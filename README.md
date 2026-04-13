@@ -1,5 +1,3 @@
-Absolutely — here it is as a clean, copy-paste-ready Markdown document for GitHub:
-
 ````markdown
 # LegendaryBatchUpdateLauncher
 
