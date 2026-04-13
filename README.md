@@ -1,6 +1,43 @@
-# LegendaryBatchUpdateLauncher
-For use with legendary launcher on windows. Check for updates to a game, if update found, update it, then launch the game. Currently legendary fails to launch and drops out if the game needs an update. Copy and paste the below into a bat or cmd file replacing gameID with the game ID you want to launch.
+Absolutely — here it is as a clean, copy-paste-ready Markdown document for GitHub:
 
+````markdown
+# LegendaryBatchUpdateLauncher
+
+A simple Windows batch script for use with the **Legendary launcher** that ensures your game is always up to date before launching.
+
+## ✨ Overview
+
+`LegendaryBatchUpdateLauncher` solves a common issue where **Legendary fails to launch a game if an update is required**, causing it to exit prematurely.
+
+This script:
+1. Checks if a game has an available update  
+2. Automatically installs the update (if found)  
+3. Launches the game afterward  
+
+## ⚙️ Requirements
+
+- Windows (CMD / Batch environment)
+- Legendary CLI installed and available in your system `PATH`
+- A valid installed game via Legendary
+
+## 🔍 Finding Your Game ID
+
+To get the correct game ID (App Name), run:
+
+```bash
+legendary list-installed
+````
+
+Look for the **App Name** column — that’s what you’ll use in the script.
+
+## 🚀 Usage
+
+1. Create a `.bat` or `.cmd` file
+2. Copy and paste the script below
+3. Replace `gameID` with your actual game ID
+4. Run the script
+
+```bat
 @echo off
 setlocal
 
@@ -31,3 +68,31 @@ if %ERRORLEVEL% EQU 0 (
 
 echo Launching %GAME%...
 legendary launch %GAME%
+```
+
+## 🧠 How It Works
+
+* Uses `legendary list-installed --check-updates --tsv` to detect updates
+* Pipes output to `findstr` to match your game
+* Checks `%ERRORLEVEL%` to determine if an update is required
+* Runs `legendary update` only when needed
+* Safely aborts if the update fails
+* Launches the game afterward
+
+## 🛠️ Customization Ideas
+
+* Add logging to a file
+* Auto-close instead of `pause` on failure
+* Support launching multiple games
+* Integrate with shortcuts or launchers
+
+## ⚠️ Notes
+
+* The script assumes `legendary` is accessible from your command line
+* If Legendary behavior changes, the update detection method may need adjustment
+
+```
+
+If you want it to look even more “GitHub polished” (badges, header banner, etc.), I can upgrade it further.
+```
+
