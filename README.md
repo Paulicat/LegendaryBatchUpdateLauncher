@@ -79,20 +79,10 @@ legendary launch %GAME%
 * Safely aborts if the update fails
 * Launches the game afterward
 
-## 🛠️ Customization Ideas
-
-* Add logging to a file
-* Auto-close instead of `pause` on failure
-* Support launching multiple games
-* Integrate with shortcuts or launchers
-
 ## ⚠️ Notes
 
 * The script assumes `legendary` is accessible from your command line
 * If Legendary behavior changes, the update detection method may need adjustment
 
-```
-
-If you want it to look even more “GitHub polished” (badges, header banner, etc.), I can upgrade it further.
 ```
 
