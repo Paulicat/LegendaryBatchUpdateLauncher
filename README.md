@@ -5,7 +5,8 @@ A simple Windows batch script for use with the **Legendary launcher** that ensur
 
 ## ✨ Overview
 
-`LegendaryBatchUpdateLauncher` solves a common issue where **Legendary fails to launch a game if an update is required**, causing it to exit prematurely.
+`LegendaryBatchUpdateLauncher` solves a common issue where **Legendary fails to launch a game if an update is required**, 
+causing it to exit prematurely.
 
 This script:
 1. Checks if a game has an available update  
