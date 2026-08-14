@@ -10,8 +10,10 @@ causing it to exit prematurely.
 
 This script:
 1. Checks if a game has an available update  
-2. Automatically installs the update (if found)  
-3. Launches the game afterward  
+2. Automatically installs the update (if found)
+3. Checks for cloud saves, syncs if exists 
+4. Launches the game
+5. Does a game save cloud sync after the game process ends
 
 ## ⚙️ Requirements
 
