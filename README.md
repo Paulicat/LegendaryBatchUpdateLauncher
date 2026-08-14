@@ -25,7 +25,7 @@ This script:
 
 To get the correct game ID (App Name), run:
 
-```bash
+```cmd
 legendary list-installed
 ````
 
