@@ -38,10 +38,8 @@ Look for the **App Name** column — that’s what you’ll use in the script.
 3. Replace `gameID` with your actual game ID
 4. Run the script
 
-```bat
 @echo off
 setlocal
-
 :: ── CONFIG ──────────────────────────────────────────────────────────────────
 set GAME=gameID
 :: Replace gameID with your game's legendary App Name/ID.
@@ -49,11 +47,9 @@ set GAME=gameID
 :: ─────────────────────────────────────────────────────────────────────────────
 
 echo Checking for updates to %GAME%...
-
 :: list-installed --check-updates --tsv prints a line for each game needing an update.
 :: If our game appears in that output, an update is available.
 legendary list-installed --check-updates --tsv 2>nul | findstr /I "%GAME%" >nul
-
 if %ERRORLEVEL% EQU 0 (
     echo Update found. Updating %GAME%...
     legendary update %GAME% -y
@@ -67,9 +63,23 @@ if %ERRORLEVEL% EQU 0 (
     echo No update needed.
 )
 
+echo Syncing cloud saves for %GAME%...
+legendary sync-saves %GAME% -y
+if %ERRORLEVEL% NEQ 0 (
+    echo Warning: save sync before launch failed. Continuing anyway...
+)
+
 echo Launching %GAME%...
 legendary launch %GAME%
-```
+
+echo Syncing cloud saves for %GAME% after play session...
+legendary sync-saves %GAME% -y
+if %ERRORLEVEL% NEQ 0 (
+    echo Warning: save sync after launch failed. Your local save may not be backed up to the cloud.
+    pause
+)
+
+endlocal
 
 ## 🧠 How It Works
 
