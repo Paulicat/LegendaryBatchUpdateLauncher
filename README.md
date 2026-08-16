@@ -44,13 +44,11 @@ setlocal
 set GAME=gameID
 :: Replace gameID with your game's legendary App Name/ID.
 :: Find it by running:  legendary list-installed
-
-set GAME_EXE=YourGame.exe
-:: Replace with the actual game process name (Task Manager > Details tab
-:: while the game is running will show you the exact .exe name).
 :: ─────────────────────────────────────────────────────────────────────────────
 
 echo Checking for updates to %GAME%...
+:: list-installed --check-updates --tsv prints a line for each game needing an update.
+:: If our game appears in that output, an update is available.
 legendary list-installed --check-updates --tsv 2>nul | findstr /I "%GAME%" >nul
 if %ERRORLEVEL% EQU 0 (
     echo Update found. Updating %GAME%...
@@ -72,28 +70,9 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo Launching %GAME%...
-start "" legendary launch %GAME%
+legendary launch %GAME%
 
-:: Give the wrapper/launcher a few seconds to actually spawn the real game exe
-timeout /t 15 /nobreak >nul
-
-echo Waiting for %GAME_EXE% to start...
-:WAIT_FOR_START
-tasklist /FI "IMAGENAME eq %GAME_EXE%" 2>nul | findstr /I "%GAME_EXE%" >nul
-if %ERRORLEVEL% NEQ 0 (
-    timeout /t 5 /nobreak >nul
-    goto WAIT_FOR_START
-)
-
-echo %GAME_EXE% is running. Waiting for it to close...
-:WAIT_FOR_EXIT
-tasklist /FI "IMAGENAME eq %GAME_EXE%" 2>nul | findstr /I "%GAME_EXE%" >nul
-if %ERRORLEVEL% EQU 0 (
-    timeout /t 5 /nobreak >nul
-    goto WAIT_FOR_EXIT
-)
-
-echo %GAME_EXE% has closed. Syncing cloud saves...
+echo Syncing cloud saves for %GAME% after play session...
 legendary sync-saves %GAME% -y
 if %ERRORLEVEL% NEQ 0 (
     echo Warning: save sync after launch failed. Your local save may not be backed up to the cloud.
@@ -117,4 +96,3 @@ endlocal
 * If Legendary behavior changes, the update detection method may need adjustment
 
 ```
-
