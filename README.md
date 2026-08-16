@@ -13,13 +13,16 @@ This script:
 2. Automatically installs the update (if found)
 3. Checks for cloud saves, syncs if exists
 4. Launches the game
-5. Does a game save cloud sync after the game process ends
+5. Watches the actual game executable for process end
+6. Does a game save cloud sync after the game process ends
+7. Logs the run session of the game launch/cloud save sync etc.
 
 ## ⚙️ Requirements
 
 - Windows (CMD / Batch environment)
 - Legendary CLI installed and available in your system `PATH`
 - A valid installed game via Legendary
+- Better when the .bat is converted to a hidden 64bit command executable (bat to exe etc).
 
 ## 🔍 Finding Your Game ID
 
@@ -30,6 +33,20 @@ legendary list-installed
 ```
 
 Look for the **App Name** column — that's what you'll use in the script.
+
+## 🔍 Finding Your Game EXE
+- Look in task manager after game is launched, sort by cpu usage will usually put the game at the top
+- Below script in powershell will list recent apps from the time you launch the script. May help to narrow it down.
+- Check if the game exe has a child process, for example sifu.exe will launch as parent and the child process to actually use in the .bat file is Sifu-Win64-Shipping.exe 
+
+```cmd
+$before = Get-Process | Select-Object -ExpandProperty ProcessName
+# launch the game here
+Start-Sleep -Seconds 20
+$after = Get-Process | Select-Object -ExpandProperty ProcessName
+Compare-Object $before $after | Where-Object SideIndicator -eq "=>"
+```
+- A valid installed game via Legendary  
 
 ## 🚀 Usage
 
