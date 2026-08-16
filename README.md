@@ -39,6 +39,8 @@ Look for the **App Name** column — that's what you'll use in the script.
 4. Replace `YourGame.exe` with the actual game process name
 5. Run the script
 
+Full script:
+
 ```bat
 @echo off
 setlocal
