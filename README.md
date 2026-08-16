@@ -45,45 +45,44 @@ Full script:
 @echo off
 setlocal
 :: ── CONFIG ──────────────────────────────────────────────────────────────────
-set GAME=gameID
-:: Replace gameID with your game's legendary App Name/ID.
-:: Find it by running:  legendary list-installed
+set GAME=GAME_ID
+:: Use the internal App Name/ID (not the display title) - find it with:
+::   legendary list-installed
 
-set GAME_EXE=YourGame.exe
-:: Replace with the actual game process name (Task Manager > Details tab
-:: while the game is running will show you the exact .exe name).
+set GAME_EXE=GAME.EXE
+:: This is the REAL game process (Unreal Engine shipping exe), not Sifu.exe
+:: (which is just a small bootstrapper that exits almost immediately).
+
+set LOGFILE=%~dp0legendary_launch_log.txt
+:: All output is logged here since the console is hidden (compiled to an
+:: invisible-console exe) - nothing printed to screen is ever seen.
 :: ─────────────────────────────────────────────────────────────────────────────
 
-echo Checking for updates to %GAME%...
-:: list-installed --check-updates --tsv prints a line for each game needing an update.
-:: If our game appears in that output, an update is available.
-legendary list-installed --check-updates --tsv 2>nul | findstr /I "%GAME%" >nul
-if %ERRORLEVEL% EQU 0 (
-    echo Update found. Updating %GAME%...
-    legendary update %GAME% -y
-    if %ERRORLEVEL% NEQ 0 (
-        echo Update failed. Aborting launch.
-        pause
-        exit /b 1
-    )
-    echo Update complete.
-) else (
-    echo No update needed.
-)
+echo ============================================== >> "%LOGFILE%"
+echo %DATE% %TIME% - Starting launch for %GAME% >> "%LOGFILE%"
 
-echo Syncing cloud saves for %GAME%...
-legendary sync-saves %GAME% -y
+echo Updating %GAME% (no-op if already current)... >> "%LOGFILE%"
+legendary update %GAME% -y >> "%LOGFILE%" 2>&1
 if %ERRORLEVEL% NEQ 0 (
-    echo Warning: save sync before launch failed. Continuing anyway...
+    echo Update failed. Aborting launch. >> "%LOGFILE%"
+    mshta "javascript:new ActiveXObject('WScript.Shell').Popup('Legendary update failed for %GAME%. Launch aborted. See legendary_launch_log.txt for details.',0,'Launch Error',48);close();"
+    exit /b 1
+)
+echo Update check complete. >> "%LOGFILE%"
+
+echo Syncing cloud saves for %GAME%... >> "%LOGFILE%"
+legendary sync-saves %GAME% -y >> "%LOGFILE%" 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo Warning: save sync before launch failed. Continuing anyway... >> "%LOGFILE%"
 )
 
-echo Launching %GAME%...
-start "" legendary launch %GAME%
+echo Launching %GAME%... >> "%LOGFILE%"
+powershell -NoProfile -WindowStyle Hidden -Command "Start-Process -FilePath 'legendary' -ArgumentList 'launch','%GAME%' -WindowStyle Hidden" >> "%LOGFILE%" 2>&1
 
 :: Give the wrapper/launcher a few seconds to actually spawn the real game exe
 timeout /t 15 /nobreak >nul
 
-echo Waiting for %GAME_EXE% to start...
+echo Waiting for %GAME_EXE% to start... >> "%LOGFILE%"
 :WAIT_FOR_START
 tasklist /FI "IMAGENAME eq %GAME_EXE%" 2>nul | findstr /I "%GAME_EXE%" >nul
 if %ERRORLEVEL% NEQ 0 (
@@ -91,7 +90,7 @@ if %ERRORLEVEL% NEQ 0 (
     goto WAIT_FOR_START
 )
 
-echo %GAME_EXE% is running. Waiting for it to close...
+echo %GAME_EXE% is running. Waiting for it to close... >> "%LOGFILE%"
 :WAIT_FOR_EXIT
 tasklist /FI "IMAGENAME eq %GAME_EXE%" 2>nul | findstr /I "%GAME_EXE%" >nul
 if %ERRORLEVEL% EQU 0 (
@@ -99,13 +98,14 @@ if %ERRORLEVEL% EQU 0 (
     goto WAIT_FOR_EXIT
 )
 
-echo %GAME_EXE% has closed. Syncing cloud saves...
-legendary sync-saves %GAME% -y
+echo %GAME_EXE% has closed. Syncing cloud saves... >> "%LOGFILE%"
+legendary sync-saves %GAME% -y >> "%LOGFILE%" 2>&1
 if %ERRORLEVEL% NEQ 0 (
-    echo Warning: save sync after launch failed. Your local save may not be backed up to the cloud.
-    pause
+    echo Warning: save sync after launch failed. Your local save may not be backed up to the cloud. >> "%LOGFILE%"
+    mshta "javascript:new ActiveXObject('WScript.Shell').Popup('Cloud save sync failed after playing %GAME%. Your save may not be backed up. See legendary_launch_log.txt for details.',0,'Save Sync Warning',48);close();"
 )
 
+echo %DATE% %TIME% - Finished. >> "%LOGFILE%"
 endlocal
 ```
 
