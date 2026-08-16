@@ -46,7 +46,6 @@ Start-Sleep -Seconds 20
 $after = Get-Process | Select-Object -ExpandProperty ProcessName
 Compare-Object $before $after | Where-Object SideIndicator -eq "=>"
 ```
-- A valid installed game via Legendary  
 
 ## 🚀 Usage
 
